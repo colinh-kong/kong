@@ -86,8 +86,28 @@
 
 ### Dependencies
 
-- Bumped `OpenSSL` from 1.1.1n to 1.1.1o
-  [#8635](https://github.com/Kong/kong/pull/8809)
+- Bumped OpenResty from 1.19.9.1 to [1.21.4.1](https://openresty.org/en/changelog-1021004.html)
+  [#8850](https://github.com/Kong/kong/pull/8850)
+- Bumped pgmoon from 1.13.0 to 1.14.0
+  [#8429](https://github.com/Kong/kong/pull/8429)
+- OpenSSL bumped to from 1.1.1n to 1.1.1o
+  [#8544](https://github.com/Kong/kong/pull/8544)
+  [#8752](https://github.com/Kong/kong/pull/8752)
+- Bumped resty.openssl from 0.8.5 to 0.8.7
+  [#8592](https://github.com/Kong/kong/pull/8592)
+  [#8753](https://github.com/Kong/kong/pull/8753)
+- Bumped inspect from 3.1.2 to 3.1.3
+  [#8589](https://github.com/Kong/kong/pull/8589)
+- Bumped resty.acme from 0.7.2 to 0.8.0
+  [#8680](https://github.com/Kong/kong/pull/8680)
+- Bumped luarocks from 3.8.0 to 3.9.0
+  [#8700](https://github.com/Kong/kong/pull/8700)
+- Bumped luasec from 1.0.2 to 1.1.0
+  [#8754](https://github.com/Kong/kong/pull/8754)
+- Bumped resty.healthcheck from 1.5.0 to 1.5.1
+  [#8755](https://github.com/Kong/kong/pull/8755)
+- Bumped resty.cassandra from 1.5.1 to 1.5.2
+  [#8845](https://github.com/Kong/kong/pull/8845)
 
 ## [2.8.1]
 
