@@ -18,7 +18,7 @@ jobs:
     - name: Checkout Kong EE source code
       uses: actions/checkout@v3
       with:
-        repository: Kong/colin-ee
+        repository: Kong/colin-kong-ee
         path: kong-ee
         ref: master
         token: ${{ secrets.PAT }}
