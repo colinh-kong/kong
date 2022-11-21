@@ -37,7 +37,13 @@ jobs:
         git checkout kong-ce/$GITHUB_HEAD_REF
         git checkout -b sync/$GITHUB_HEAD_REF
         git push -u origin sync/$GITHUB_HEAD_REF
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      with:
-        limit-access-to-actor: true
+    - name: Create the pr
+      run: |
+        export TITLE=$(gh pr view --repo $GITHUB_REPOSITORY $GITHUB_HEAD_REF --json title,body,url | jq -r .title)
+        export BODY=$(gh pr view --repo $GITHUB_REPOSITORY $GITHUB_HEAD_REF --json title,body,url | jq -r .body)
+        export URL=$(gh pr view --repo $GITHUB_REPOSITORY $GITHUB_HEAD_REF --json title,body,url | jq -r .url)
+        pushd kong-ee
+        gh pr create \
+          --repo Kong/colin-kong-ee \
+          --title "$TITLE" \
+          --body "Automated Sync of $URL $BODY"
