@@ -1,12 +1,15 @@
 name: Sync
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
-    - master
+      - 'master'
 
 jobs:
   sync:
     name: Sync to Private Fork
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
