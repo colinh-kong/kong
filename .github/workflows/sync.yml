@@ -38,6 +38,8 @@ jobs:
         git checkout -b sync/$GITHUB_HEAD_REF
         git push -u origin sync/$GITHUB_HEAD_REF
     - name: Create the pr
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
       run: |
         export TITLE=$(gh pr view --repo $GITHUB_REPOSITORY $GITHUB_HEAD_REF --json title,body,url | jq -r .title)
         export BODY=$(gh pr view --repo $GITHUB_REPOSITORY $GITHUB_HEAD_REF --json title,body,url | jq -r .body)
