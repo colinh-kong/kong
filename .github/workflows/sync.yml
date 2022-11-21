@@ -15,7 +15,23 @@ jobs:
     steps:
     - name: Checkout Kong source code
       uses: actions/checkout@v3
+    - name: Checkout Kong EE source code
+      uses: actions/checkout@v3
+      with:
+        repository: Kong/colin-kong-ee
+        path: kong-ee
+        ref: ${{ GITHUB_REF }}
+        token: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
+    - name: Setup Kong CE as a remote on Kong EE
+      run: |
+        cd kong-ee
+        git remote add kong-ce https://github.com/${{ GITHUB_REPOSITORY }}
+        git fetch
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
         limit-access-to-actor: true
+    - name: Setup the sync branch
+      run: |
+        cd kong-ee
+        git checkout -b sync/${{ GITHUB_HEAD_REF }}
