@@ -22,16 +22,22 @@ jobs:
         path: kong-ee
         ref: master
         token: ${{ secrets.PAT }}
+    - name: Setup github config
+      run: |
+        git config --global user.email "team-eng-enablement+github-bot@konghq.com"
+        git config --global user.name "Eng Enablement"
     - name: Setup Kong CE as a remote on Kong EE
       run: |
         cd kong-ee
-        git remote add kong-ce https://github.com/${{ github.GITHUB_REPOSITORY }}
+        git remote add kong-ce https://github.com/colin-kong
         git fetch
+    - name: Setup the sync branch
+      run: |
+        cd kong-ee
+        git checkout origin $GITHUB_HEAD_REF
+        git checkout -b sync/$GITHUB_HEAD_REF
+        git push -u origin sync/$GITHUB_HEAD_REF
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
         limit-access-to-actor: true
-    - name: Setup the sync branch
-      run: |
-        cd kong-ee
-        git checkout -b sync/${{ github.GITHUB_HEAD_REF }}
