@@ -18,10 +18,10 @@ jobs:
     - name: Checkout Kong EE source code
       uses: actions/checkout@v3
       with:
-        repository: Kong/colin-kong-ee
+        repository: Kong/${{ github.GITHUB_REPOSITORY }}-ee
         path: kong-ee
         ref: ${{ github.GITHUB_REF }}
-        token: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
+        token: ${{ secrets.PAT }}
     - name: Setup Kong CE as a remote on Kong EE
       run: |
         cd kong-ee
