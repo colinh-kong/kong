@@ -20,7 +20,7 @@ jobs:
       with:
         repository: Kong/colin-ee
         path: kong-ee
-        ref: ${{ github.GITHUB_REF }}
+        ref: master
         token: ${{ secrets.PAT }}
     - name: Setup Kong CE as a remote on Kong EE
       run: |
