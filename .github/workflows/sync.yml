@@ -25,7 +25,7 @@ jobs:
     - name: Setup Kong CE as a remote on Kong EE
       run: |
         cd kong-ee
-        git remote add kong-ce https://github.com/${{ GITHUB_REPOSITORY }}
+        git remote add kong-ce https://github.com/${{ github.GITHUB_REPOSITORY }}
         git fetch
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
@@ -34,4 +34,4 @@ jobs:
     - name: Setup the sync branch
       run: |
         cd kong-ee
-        git checkout -b sync/${{ GITHUB_HEAD_REF }}
+        git checkout -b sync/${{ github.GITHUB_HEAD_REF }}
