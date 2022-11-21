@@ -34,7 +34,7 @@ jobs:
     - name: Setup the sync branch
       run: |
         pushd kong-ee
-        git checkout kong-ce $GITHUB_HEAD_REF
+        git checkout kong-ce/$GITHUB_HEAD_REF
         git checkout -b sync/$GITHUB_HEAD_REF
         git push -u origin sync/$GITHUB_HEAD_REF
     - name: Setup tmate session
