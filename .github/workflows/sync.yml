@@ -28,17 +28,13 @@ jobs:
         git config --global user.name "Eng Enablement"
     - name: Setup Kong CE as a remote on Kong EE
       run: |
-        cd kong-ee
-        git remote add kong-ce https://github.com/colin-kong
-        git fetch
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      with:
-        limit-access-to-actor: true
+        pushd kong-ee
+        git remote add kong-ce https://github.com/Kong/colin-kong
+        git fetch kong-ce
     - name: Setup the sync branch
       run: |
-        cd kong-ee
-        git checkout origin $GITHUB_HEAD_REF
+        pushd kong-ee
+        git checkout kong-ce $GITHUB_HEAD_REF
         git checkout -b sync/$GITHUB_HEAD_REF
         git push -u origin sync/$GITHUB_HEAD_REF
     - name: Setup tmate session
