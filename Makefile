@@ -121,17 +121,31 @@ package/apk:
 package/rpm:
 	PACKAGE_TYPE=rpm OPERATING_SYSTEM=redhat OPERATING_SYSTEM_VERSION=8 $(MAKE) package
 
-package/test/deb: package/deb
+package/test: package/docker setup-kong-build-tools
+	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) kong/kong:$(ARCHITECTURE)-test
+	cp package/*$(ARCHITECTURE).$(PACKAGE_TYPE) $(KONG_BUILD_TOOLS_LOCATION)/output/
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=deb RESTY_IMAGE_BASE=ubuntu RESTY_IMAGE_TAG=22.04 $(MAKE) test
+	KONG_SOURCE_LOCATION=$(PWD) \
+	KONG_TEST_CONTAINER_TAG=test \
+	$(MAKE) test
 
-package/test/apk: package/apk
-	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=apk RESTY_IMAGE_BASE=alpine RESTY_IMAGE_TAG=3 $(MAKE) test
+package/test/deb:
+	PACKAGE_TYPE=deb \
+	RESTY_IMAGE_BASE=ubuntu \
+	RESTY_IMAGE_TAG=22.04 \
+	$(MAKE) package/test
 
-package/test/rpm: package/rpm
-	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=8.6 $(MAKE) test
+package/test/apk:
+	PACKAGE_TYPE=apk \
+	RESTY_IMAGE_BASE=alpine \
+	RESTY_IMAGE_TAG=3 \
+	$(MAKE) package/test
+
+package/test/rpm:
+	PACKAGE_TYPE=rpm \
+	RESTY_IMAGE_BASE=rhel \
+	RESTY_IMAGE_TAG=8.7 \
+	$(MAKE) package/test
 
 package/docker: package
 	-rm -rf docker-kong
