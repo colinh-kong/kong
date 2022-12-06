@@ -207,7 +207,8 @@ release/package: package/$(PACKAGE_EXTENSION)
     -v "$(PWD)/package:/files:ro" \
     -i kong/release-script \
         --file "/files/$(DIST_FILE)" \
-        --dist-name "$(OPERATING_SYSTEM)" --dist-version $(OPERATING_SYSTEM_VERSION) \
+        --dist-name "$(OPERATING_SYSTEM)" \
+		--dist-version $(OPERATING_SYSTEM_VERSION) \
         --major-version "$(MAJOR_VERSION)" \
         --publish
 
