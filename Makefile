@@ -101,6 +101,9 @@ DOCKER_BUILD_OUTPUT ?= --load
 DOCKER_COMMAND ?= /bin/bash
 DOCKER_RELEASE_REPOSITORY ?= kong/kong
 KONG_TEST_CONTAINER_TAG ?= $(PACKAGE_TYPE)
+PULP_HOST ?= "https://api.pulp.konnect-dev.konghq.com"
+PULP_USERNAME ?= "admin"
+PULP_PASSWORD ?= "foxy"
 
 docker/build:
 	docker image inspect -f='{{.Id}}' $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) || \
@@ -193,6 +196,20 @@ release/docker/apk: package/apk
 release/docker/rpm: package/rpm
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
 	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=8.6 $(MAKE) release-kong-docker-images
+
+release/package: package/$(PACKAGE_EXTENSION)
+	DIST_FILE=$(ls ./package/*)
+	MAJOR_VERSION=$(KONG_VERSION%%.*).x
+	docker run \
+    -e PULP_HOST=$(PULP_HOST) \
+    -e PULP_USERNAME=$(PULP_USERNAME) \
+    -e PULP_PASSWORD=$(PULP_PASSWORD) \
+    -v "$(PWD)/package:/files:ro" \
+    -i kong/release-script \
+        --file "/files/$(DIST_FILE)" \
+        --dist-name "$(OPERATING_SYSTEM)" --dist-version $(OPERATING_SYSTEM_VERSION) \
+        --major-version "$(MAJOR_VERSION)" \
+        --publish
 
 setup-kong-build-tools:
 	-git submodule update --init --recursive
