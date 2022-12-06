@@ -13,7 +13,7 @@ pipeline {
         // PULP_PROD and PULP_STAGE are used to do releases
         PULP_HOST_PROD = "https://api.pulp.konnect-prod.konghq.com"
         PULP_PROD = credentials('PULP')
-        PULP_HOST_STAGE = "https://api.pulp.konnect-stage.konghq.com"
+        PULP_HOST_STAGE = "https://api.pulp.konnect-dev.konghq.com"
         PULP_STAGE = credentials('PULP_STAGE')
         DEBUG = 0
     }
