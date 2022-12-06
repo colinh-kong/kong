@@ -18,9 +18,10 @@ RUN rm -rf /kong && rm -rf /distribution/*
 
 COPY . /kong
 WORKDIR /kong
-RUN ./install-kong.sh && \
-    cp -r /tmp/build/* / && \
-    ./install-test.sh && \
+RUN ./install-kong.sh
+
+RUN cp -r /tmp/build/* / && \
+    DEBUG=1 ./install-test.sh && \
     kong version
 
 # COPY --from doesn't support args so use an intermediary image

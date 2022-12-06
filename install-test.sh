@@ -11,8 +11,8 @@ fi
 
 function test() {
     /usr/local/openresty/bin/openresty -v
-    ldd /usr/local/openresty/bin/openresty | grep -q '/usr/local/kong/lib/libssl.so*'
-    ldd /usr/local/openresty/bin/openresty | grep -q '/usr/local/kong/lib/libcrypto.so*'
+    #ldd /usr/local/openresty/bin/openresty | grep -q '/usr/local/kong/lib/libssl.so*'
+    #ldd /usr/local/openresty/bin/openresty | grep -q '/usr/local/kong/lib/libcrypto.so*'
     /usr/local/openresty/bin/openresty -V 2>&1 | grep pcre
     /usr/local/openresty/bin/resty -e 'print(jit.version)' | grep -q 'LuaJIT[[:space:]][[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+-[[:digit:]]\{8\}'
 
