@@ -85,20 +85,41 @@ setup-ci:
 	KONG_NGINX_MODULE_BRANCH=$(KONG_NGINX_MODULE_BRANCH) \
 	.ci/setup_env.sh
 
-package/deb: setup-kong-build-tools
-	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=deb RESTY_IMAGE_BASE=ubuntu RESTY_IMAGE_TAG=22.04 $(MAKE) package-kong && \
-	cp $(KONG_BUILD_TOOLS_LOCATION)/output/*.deb .
+ARCHITECTURE ?= amd64
+PACKAGE_TYPE ?= deb
+PACKAGE_EXTENSION ?= $(PACKAGE_TYPE)
+OPERATING_SYSTEM ?= ubuntu
+OPERATING_SYSTEM_VERSION ?= 22.04
+KONG_VERSION ?= 3.0.1
+DOCKER_BUILD_TARGET ?= build
+DOCKER_BUILD_OUTPUT ?= --load
+DOCKER_COMMAND ?= /bin/bash
 
-package/apk: setup-kong-build-tools
-	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=apk RESTY_IMAGE_BASE=alpine RESTY_IMAGE_TAG=3 $(MAKE) package-kong && \
-	cp $(KONG_BUILD_TOOLS_LOCATION)/output/*.apk.* .
+docker/build:
+	docker image inspect -f='{{.Id}}' $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) || \
+	docker buildx build \
+		--build-arg PACKAGE_TYPE=$(PACKAGE_TYPE) \
+		--build-arg KONG_VERSION=$(KONG_VERSION) \
+		--build-arg OPERATING_SYSTEM=$(OPERATING_SYSTEM) \
+		--build-arg OPERATING_SYSTEM_VERSION=$(OPERATING_SYSTEM_VERSION) \
+		--build-arg ARCHITECTURE=$(ARCHITECTURE) \
+		--target=$(DOCKER_BUILD_TARGET) \
+		-t $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) \
+		$(DOCKER_BUILD_OUTPUT) .
 
-package/rpm: setup-kong-build-tools
-	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=8.6 $(MAKE) package-kong && \
-	cp $(KONG_BUILD_TOOLS_LOCATION)/output/*.rpm .
+package:
+	$(MAKE) docker/build
+	$(MAKE) DOCKER_BUILD_TARGET=package DOCKER_BUILD_OUTPUT="-o package" docker/build
+	ls package/
+
+package/deb:
+	PACKAGE_TYPE=deb OPERATING_SYSTEM=ubuntu OPERATING_SYSTEM_VERSION=22.04 $(MAKE) package
+
+package/apk:
+	PACKAGE_TYPE=apk OPERATING_SYSTEM=alpine OPERATING_SYSTEM_VERSION=3 $(MAKE) package
+
+package/rpm:
+	PACKAGE_TYPE=rpm OPERATING_SYSTEM=redhat OPERATING_SYSTEM_VERSION=8 $(MAKE) package
 
 package/test/deb: package/deb
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
