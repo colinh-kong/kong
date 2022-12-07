@@ -197,19 +197,19 @@ release/docker/rpm: package/rpm
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
 	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=8.6 $(MAKE) release-kong-docker-images
 
-release/package: package/$(PACKAGE_EXTENSION)
-	DIST_FILE=$(ls ./package/*)
-	MAJOR_VERSION=$(KONG_VERSION%%.*).x
+release/package: package/$(PACKAGE_TYPE)
+	mv ./package/*.$(PACKAGE_EXTENSION) ./package/kong-$(KONG_VERSION)-.$(ARCHITECTURE)
 	docker run \
     -e PULP_HOST=$(PULP_HOST) \
     -e PULP_USERNAME=$(PULP_USERNAME) \
     -e PULP_PASSWORD=$(PULP_PASSWORD) \
     -v "$(PWD)/package:/files:ro" \
     -i kong/release-script \
-        --file "/files/$(DIST_FILE)" \
+		--package-type gateway \
+        --file "/files/"`ls ./package` \
         --dist-name "$(OPERATING_SYSTEM)" \
 		--dist-version $(OPERATING_SYSTEM_VERSION) \
-        --major-version "$(MAJOR_VERSION)" \
+        --major-version $(firstword $(subst ., ,$(KONG_VERSION))).x \
         --publish
 
 setup-kong-build-tools:
