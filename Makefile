@@ -173,6 +173,7 @@ package/test/apk:
 	PACKAGE_EXTENSION=apk.tar.gz \
 	RESTY_IMAGE_BASE=alpine \
 	RESTY_IMAGE_TAG=3 \
+	TEST_OPERATING_SYSTEM=kong:latest \
 	$(MAKE) package/test
 
 package/test/rpm:
