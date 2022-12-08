@@ -122,7 +122,7 @@ docker/build:
 		-t $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) \
 		$(DOCKER_BUILD_OUTPUT) .
 
-package: clean
+package:
 	$(MAKE) DOCKER_BUILD_TARGET=build docker/build
 	$(MAKE) DOCKER_BUILD_TARGET=test docker/build
 	$(MAKE) DOCKER_BUILD_TARGET=package DOCKER_BUILD_OUTPUT="-o package" docker/build
