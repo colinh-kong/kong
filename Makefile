@@ -145,7 +145,7 @@ package/rpm:
 	PACKAGE_TYPE=rpm \
 	OPERATING_SYSTEM=redhat/ubi7-minimal \
 	OPERATING_SYSTEM_VERSION=7 \
-	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi7/ubi-minimal \
+	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi8/ubi-minimal \
 	$(MAKE) package
 
 package/test: package/docker setup-kong-build-tools
