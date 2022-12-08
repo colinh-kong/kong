@@ -200,17 +200,17 @@ package/docker: package
 	-rm -rf docker-kong
 
 package/docker/deb: package/deb
-	PACKAGE_TYPE=deb OPERATING_SYSTEM=ubuntu OPERATING_SYSTEM_VERSION=22.04 $(MAKE) package/docker
+	PACKAGE_TYPE=deb OPERATING_SYSTEM=ubuntu OPERATING_SYSTEM_VERSION=18.04 $(MAKE) package/docker
 
 package/docker/apk: package/apk
 	PACKAGE_TYPE=apk OPERATING_SYSTEM=alpine OPERATING_SYSTEM_VERSION=3 PACKAGE_EXTENSION=apk.tar.gz $(MAKE) package/docker
 
 package/docker/rpm: package/rpm
-	PACKAGE_TYPE=rpm OPERATING_SYSTEM=redhat\/ubi8-minimal OPERATING_SYSTEM_VERSION=8.6 $(MAKE) package/docker
+	PACKAGE_TYPE=rpm OPERATING_SYSTEM=redhat\/ubi7-minimal OPERATING_SYSTEM_VERSION=7 $(MAKE) package/docker
 
 release/docker/deb: package/deb
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=deb RESTY_IMAGE_BASE=ubuntu RESTY_IMAGE_TAG=22.04 $(MAKE) release-kong-docker-images
+	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=deb RESTY_IMAGE_BASE=ubuntu RESTY_IMAGE_TAG=18.04 $(MAKE) release-kong-docker-images
 
 release/docker/apk: package/apk
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
@@ -218,7 +218,7 @@ release/docker/apk: package/apk
 
 release/docker/rpm: package/rpm
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
-	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=8.6 $(MAKE) release-kong-docker-images
+	KONG_SOURCE_LOCATION=$(PWD) PACKAGE_TYPE=rpm RESTY_IMAGE_BASE=rhel RESTY_IMAGE_TAG=7 $(MAKE) release-kong-docker-images
 
 release/package: package/$(PACKAGE_TYPE)
 	mv ./package/*.$(PACKAGE_EXTENSION) ./package/kong-$(KONG_VERSION)-.$(ARCHITECTURE)
