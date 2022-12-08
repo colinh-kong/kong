@@ -2,6 +2,7 @@
 
 ARG PACKAGE_TYPE=deb
 ARG ARCHITECTURE=amd64
+ARG TEST_OPERATING_SYSTEM=ubuntu:22.04
 
 # List out all image permutation to trick dependabot
 FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.6-x86_64-linux-gnu as amd64-deb
@@ -19,12 +20,16 @@ WORKDIR /kong
 
 # Run our predecessor tests
 # Configure, build, and install
-# Run our own tests
-# Re-run our predecesor tests
 RUN /test/*/test.sh && \
-    ./install-kong.sh && \
-    DEBUG=1 ./install-test.sh && \
-    /test/*/test.sh
+    ./install-kong.sh
+
+
+FROM $TEST_OPERATING_SYSTEM as test
+
+COPY --from=build /tmp/build /tmp/build
+COPY --from=build /test /test
+COPY ./install-test.sh /test/kong/test.sh
+RUN /test/*/test.sh
 
 
 # Use FPM to change the contents of /tmp/build into a deb / rpm / apk.tar.gz
