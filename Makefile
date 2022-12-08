@@ -59,6 +59,8 @@ endif
 clean:
 	-rm -rf package
 	-rm -rf docker-kong
+	-docker rmi build-$(ARCHITECTURE)-$(PACKAGE_TYPE)
+	-docker rmi test-$(ARCHITECTURE)-$(PACKAGE_TYPE)
 
 release-docker-images:
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
@@ -104,7 +106,7 @@ DOCKER_RELEASE_REPOSITORY ?= kong/kong
 KONG_TEST_CONTAINER_TAG ?= $(PACKAGE_TYPE)
 PULP_HOST ?= "https://api.pulp.konnect-dev.konghq.com"
 PULP_USERNAME ?= "admin"
-PULP_PASSWORD ?= "foxy"
+PULP_PASSWORD ?= "foxy" # not the real password
 
 docker/build:
 	docker image inspect -f='{{.Id}}' $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) || \
@@ -119,8 +121,9 @@ docker/build:
 		-t $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) \
 		$(DOCKER_BUILD_OUTPUT) .
 
-package:
-	$(MAKE) docker/build
+package: clean
+	$(MAKE) DOCKER_BUILD_TARGET=build docker/build
+	$(MAKE) DOCKER_BUILD_TARGET=test docker/build
 	$(MAKE) DOCKER_BUILD_TARGET=package DOCKER_BUILD_OUTPUT="-o package" docker/build
 	ls package/
 
@@ -146,7 +149,8 @@ package/rpm:
 
 package/test: package/docker setup-kong-build-tools
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):$(KONG_TEST_CONTAINER_TAG)
-	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):$(ARCHITECTURE)-$(KONG_TEST_CONTAINER_TAG)
+	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):amd64-$(KONG_TEST_CONTAINER_TAG)
+	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):arm64-$(KONG_TEST_CONTAINER_TAG)
 	cp package/*$(ARCHITECTURE).$(PACKAGE_EXTENSION) $(KONG_BUILD_TOOLS_LOCATION)/output/
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
 	KONG_SOURCE_LOCATION=$(PWD) \
@@ -183,7 +187,8 @@ package/docker: package
 	-rm -rf docker-kong
 	git clone --single-branch --branch $(DOCKER_KONG_VERSION) https://github.com/Kong/docker-kong.git docker-kong
 	cp package/*.$(PACKAGE_EXTENSION) ./docker-kong/kong.$(PACKAGE_EXTENSION)
-	sed -i.bak "s|^FROM .*|FROM ${OPERATING_SYSTEM}:${OPERATING_SYSTEM_VERSION}|" docker-kong/Dockerfile.$(PACKAGE_TYPE)
+	docker pull --platform=linux/$(ARCHITECTURE) ${OPERATING_SYSTEM}:${OPERATING_SYSTEM_VERSION}
+	sed -i.bak "s|^FROM .*|FROM --platform=linux/$(ARCHITECTURE) ${OPERATING_SYSTEM}:${OPERATING_SYSTEM_VERSION}|" docker-kong/Dockerfile.$(PACKAGE_TYPE)
 	cd docker-kong && \
 	docker image inspect -f '{{.ID}}' kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) || \
 	ASSET_LOCATION=local DOCKER_TAG_PREFIX=kong-$(ARCHITECTURE) PACKAGE=$(PACKAGE_TYPE) $(MAKE) build_v2
