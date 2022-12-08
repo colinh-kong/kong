@@ -96,7 +96,7 @@ ARCHITECTURE ?= amd64
 PACKAGE_TYPE ?= deb
 PACKAGE_EXTENSION ?= $(PACKAGE_TYPE)
 OPERATING_SYSTEM ?= ubuntu
-OPERATING_SYSTEM_VERSION ?= 22.04
+OPERATING_SYSTEM_VERSION ?= 18.04
 TEST_OPERATING_SYSTEM ?= $(OPERATING_SYSTEM):$(OPERATING_SYSTEM_VERSION)
 KONG_VERSION ?= 3.0.1
 DOCKER_BUILD_TARGET ?= build
@@ -131,7 +131,7 @@ package:
 package/deb:
 	PACKAGE_TYPE=deb \
 	OPERATING_SYSTEM=ubuntu \
-	OPERATING_SYSTEM_VERSION=22.04 \
+	OPERATING_SYSTEM_VERSION=18.04 \
 	$(MAKE) package
 
 package/apk:
@@ -143,9 +143,9 @@ package/apk:
 
 package/rpm:
 	PACKAGE_TYPE=rpm \
-	OPERATING_SYSTEM=redhat/ubi8-minimal \
-	OPERATING_SYSTEM_VERSION=8 \
-	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi8/ubi-minimal \
+	OPERATING_SYSTEM=redhat/ubi7-minimal \
+	OPERATING_SYSTEM_VERSION=7 \
+	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi7/ubi-minimal \
 	$(MAKE) package
 
 package/test: package/docker setup-kong-build-tools
@@ -162,9 +162,9 @@ package/test: package/docker setup-kong-build-tools
 package/test/deb:
 	PACKAGE_TYPE=deb \
 	OPERATING_SYSTEM=ubuntu \
-	OPERATING_SYSTEM_VERSION=22.04 \
+	OPERATING_SYSTEM_VERSION=18.04 \
 	RESTY_IMAGE_BASE=ubuntu \
-	RESTY_IMAGE_TAG=22.04 \
+	RESTY_IMAGE_TAG=18.04 \
 	$(MAKE) package/test
 
 package/test/apk:
@@ -182,7 +182,7 @@ package/test/rpm:
 	OPERATING_SYSTEM=redhat/ubi8-minimal \
 	OPERATING_SYSTEM_VERSION=latest \
 	RESTY_IMAGE_BASE=rhel \
-	RESTY_IMAGE_TAG=8.7 \
+	RESTY_IMAGE_TAG=7 \
 	$(MAKE) package/test
 
 package/docker: package
