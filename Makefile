@@ -111,6 +111,7 @@ PULP_PASSWORD ?= "foxy" # not the real password
 docker/build:
 	docker image inspect -f='{{.Id}}' $(DOCKER_BUILD_TARGET)-$(ARCHITECTURE)-$(PACKAGE_TYPE) || \
 	docker buildx build \
+		--platform="linux/$(ARCHITECTURE)" \
 		--build-arg PACKAGE_TYPE=$(PACKAGE_TYPE) \
 		--build-arg KONG_VERSION=$(KONG_VERSION) \
 		--build-arg OPERATING_SYSTEM=$(OPERATING_SYSTEM) \
