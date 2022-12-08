@@ -39,7 +39,14 @@ jobs:
     - name: Swap git with https
       run: git config --global url."https://github".insteadOf git://github
 
-    - name: Package & Test
+    - name: Package
+      env:
+        GITHUB_TOKEN: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
+      run: |
+          cd ${{ env.KONG_SOURCE_LOCATION }} && \
+          make package/deb
+
+    - name: Package Smoke Test
       env:
         GITHUB_TOKEN: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
       run: |
@@ -95,11 +102,17 @@ jobs:
     - name: Swap git with https
       run: git config --global url."https://github".insteadOf git://github
 
-    - name: Package & Test
+    - name: Package
       env:
         GITHUB_TOKEN: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
       run: |
-        docker buildx use default
+        cd ${{ env.KONG_SOURCE_LOCATION }} && \
+        make package/${{ matrix.package_type }}
+
+    - name: Package Smoke Test
+      env:
+        GITHUB_TOKEN: ${{ secrets.GHA_KONG_BOT_READ_TOKEN }}
+      run: |
         cd ${{ env.KONG_SOURCE_LOCATION }} && \
         make package/test/${{ matrix.package_type }}
 
