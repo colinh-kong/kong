@@ -4,12 +4,12 @@ ARG PACKAGE_TYPE=deb
 ARG ARCHITECTURE=amd64
 
 # List out all image permutation to trick dependabot
-FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.5-x86_64-linux-gnu as amd64-deb
-FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.5-x86_64-linux-musl as amd64-rpm
-FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.5-x86_64-linux-musl as amd64-apk
-FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.5-aarch64-linux-gnu as arm64-deb
-FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.5-aarch64-linux-gnu as arm64-rpm
-FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.5-aarch64-linux-musl as arm64-apk
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.6-x86_64-linux-gnu as amd64-deb
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.6-x86_64-linux-musl as amd64-rpm
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.6-x86_64-linux-musl as amd64-apk
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.6-aarch64-linux-gnu as arm64-deb
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.6-aarch64-linux-gnu as arm64-rpm
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.6-aarch64-linux-musl as arm64-apk
 
 
 FROM $ARCHITECTURE-$PACKAGE_TYPE as build
