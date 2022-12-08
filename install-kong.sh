@@ -43,6 +43,7 @@ function with_backoff {
 }
 
 function main() {
+  echo '--- installing kong ---'
   ROCKS_CONFIG=$(mktemp)
   echo "
   rocks_trees = {
@@ -90,6 +91,7 @@ function main() {
     mkdir -p /tmp/build/etc/kong
     cp kong.conf.default /tmp/build/usr/local/lib/luarocks/rock*/kong/$ROCKSPEC_VERSION/
     cp kong.conf.default /tmp/build/etc/kong/kong.conf.default
+    cp fpm/kong.logrotate /tmp/build/etc/kong/kong.logrotate
 
     # /usr/local/kong/include is usually created by other C libraries, like openssl
     # call mkdir here to make sure it's created
@@ -114,6 +116,8 @@ function main() {
   sed -i 's/\/tmp\/build//' `grep -l -I -r '\/tmp\/build' /tmp/build/` || true
 
   chown -R 1000:1000 /tmp/build/*
+
+  echo '--- installed kong ---'
 }
 
 main
