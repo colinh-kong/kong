@@ -238,7 +238,7 @@ setup-kong-build-tools:
 	-git submodule update --init --recursive
 	-git submodule status
 	-rm -rf $(KONG_BUILD_TOOLS_LOCATION)
-	-git clone https://github.com/Kong/kong-build-tools.git --recursive $(KONG_BUILD_TOOLS_LOCATION)
+	-git clone https://github.com/colinh-kong/kong-build-tools.git --recursive $(KONG_BUILD_TOOLS_LOCATION)
 	cd $(KONG_BUILD_TOOLS_LOCATION); \
 	git reset --hard && git checkout $(KONG_BUILD_TOOLS); \
 
