@@ -148,7 +148,7 @@ package/rpm:
 	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi8/ubi-minimal \
 	$(MAKE) package
 
-package/test: package/docker
+package/test: package/docker setup-kong-build-tools
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):$(KONG_TEST_CONTAINER_TAG)
 # Kong-build-tools backwards compatibility fix
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):amd64-$(KONG_TEST_CONTAINER_TAG)
