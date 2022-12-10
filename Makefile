@@ -148,9 +148,9 @@ package/rpm:
 	TEST_OPERATING_SYSTEM=registry.access.redhat.com/ubi8/ubi-minimal \
 	$(MAKE) package
 
-package/test: package/docker setup-kong-build-tools
+package/test: package/docker
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):$(KONG_TEST_CONTAINER_TAG)
-# Kong-build-tools assumption about docker image names
+# Kong-build-tools backwards compatibility fix
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):amd64-$(KONG_TEST_CONTAINER_TAG)
 	docker tag kong-$(ARCHITECTURE)-$(PACKAGE_TYPE) $(DOCKER_RELEASE_REPOSITORY):arm64-$(KONG_TEST_CONTAINER_TAG)
 	cp package/*$(ARCHITECTURE).$(PACKAGE_EXTENSION) $(KONG_BUILD_TOOLS_LOCATION)/output/
@@ -180,11 +180,13 @@ package/test/apk:
 	$(MAKE) package/test
 
 package/test/rpm:
+# Kong-build-tools backwards compatibility fix
+	docker pull --platform=linux/${ARCHITECTURE} registry.access.redhat.com/ubi8/ubi
 	PACKAGE_TYPE=rpm \
 	OPERATING_SYSTEM=redhat/ubi8-minimal \
 	OPERATING_SYSTEM_VERSION=latest \
 	RESTY_IMAGE_BASE=rhel \
-	RESTY_IMAGE_TAG=7 \
+	RESTY_IMAGE_TAG=8 \
 	$(MAKE) package/test
 
 package/docker: package
