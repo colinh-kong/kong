@@ -28,16 +28,19 @@ FROM $TEST_OPERATING_SYSTEM as test
 
 COPY --from=build /tmp/build /tmp/build
 COPY --from=build /test /test
+
+# Todo integrate this fix into kong-openssl repository
+COPY test.sh /test/kong-openssl/test.sh
 COPY ./install-test.sh /test/kong/test.sh
 USER root
-RUN /test/*/test.sh
+RUN DEBUG=1 /test/*/test.sh
 
 
 # Use FPM to change the contents of /tmp/build into a deb / rpm / apk.tar.gz
 FROM kong/fpm:0.5.1 as fpm
 
 COPY --from=test /tmp/build /tmp/build
-COPY --link /fpm /fpm
+COPY /fpm /fpm
 
 # Keep sync'd with the fpm/package.sh variables
 ARG PACKAGE_TYPE=deb
