@@ -26,3 +26,7 @@ bin/grpcurl
 
 *.so
 *.bak
+*.rock
+
+bazel-*
+package
