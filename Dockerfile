@@ -2,35 +2,41 @@
 
 ARG PACKAGE_TYPE=deb
 ARG ARCHITECTURE=amd64
+ARG TEST_OPERATING_SYSTEM=ubuntu:22.04
 
 # List out all image permutation to trick dependabot
-FROM ghcr.io/kong/kong-runtime:1.1.4-x86_64-linux-gnu as amd64-deb
-FROM ghcr.io/kong/kong-runtime:1.1.4-x86_64-linux-gnu as amd64-rpm
-FROM ghcr.io/kong/kong-runtime:1.1.4-x86_64-linux-musl as amd64-apk
-FROM ghcr.io/kong/kong-runtime:1.1.4-aarch64-linux-gnu as arm64-deb
-FROM ghcr.io/kong/kong-runtime:1.1.4-aarch64-linux-gnu as arm64-rpm
-FROM ghcr.io/kong/kong-runtime:1.1.4-aarch64-linux-musl as arm64-apk
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.7-x86_64-linux-gnu as amd64-deb
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.7-x86_64-linux-gnu as amd64-rpm
+FROM --platform=linux/amd64 ghcr.io/kong/kong-runtime:1.1.7-x86_64-linux-musl as amd64-apk
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.7-aarch64-linux-gnu as arm64-deb
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.7-aarch64-linux-gnu as arm64-rpm
+FROM --platform=linux/arm64 ghcr.io/kong/kong-runtime:1.1.7-aarch64-linux-musl as arm64-apk
 
 
 FROM $ARCHITECTURE-$PACKAGE_TYPE as build
 
-RUN rm -rf /kong && rm -rf /distribution/*
-
 COPY . /kong
 WORKDIR /kong
-RUN ./install-kong.sh && \
-    cp -r /tmp/build/* / && \
-    ./install-test.sh && \
-    kong version
 
-# COPY --from doesn't support args so use an intermediary image
-FROM build-$ARCHITECTURE-$PACKAGE_TYPE as build-result
+# Run our predecessor tests
+# Configure, build, and install
+RUN /test/*/test.sh && \
+    ./install-kong.sh
+
+
+FROM $TEST_OPERATING_SYSTEM as test
+
+COPY --from=build /tmp/build /tmp/build
+COPY --from=build /test /test
+COPY ./install-test.sh /test/kong/test.sh
+USER root
+RUN /test/*/test.sh
 
 
 # Use FPM to change the contents of /tmp/build into a deb / rpm / apk.tar.gz
 FROM kong/fpm:0.5.1 as fpm
 
-COPY --from=build-result /tmp/build /tmp/build
+COPY --from=test /tmp/build /tmp/build
 COPY --link /fpm /fpm
 
 # Keep sync'd with the fpm/package.sh variables
